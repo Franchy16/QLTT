@@ -4,6 +4,9 @@
  */
 package qltt;
 
+import javax.swing.SwingUtilities;
+import qltt.GUI.HomeGUI;
+
 /**
  *
  * @author admin
@@ -15,6 +18,7 @@ public class QLTT {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        SwingUtilities.invokeLater(() -> new HomeGUI().setVisible(true));
     }
     
 }
