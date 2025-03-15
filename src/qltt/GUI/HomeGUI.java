@@ -7,6 +7,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author admin
@@ -28,7 +31,13 @@ public class HomeGUI extends JFrame {
         
         btnStudent.addActionListener(e -> openStudentManagement());
         btnScore.addActionListener(e -> openScoreManagement());
-        btnEvaluation.addActionListener(e -> openEvaluationManagement());
+        btnEvaluation.addActionListener(e -> {
+            try {
+                openEvaluationManagement();
+            } catch (SQLException ex) {
+                Logger.getLogger(HomeGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
         btnReward.addActionListener(e -> openRewardManagement());
         
         add(btnStudent);
@@ -46,8 +55,9 @@ public class HomeGUI extends JFrame {
         JOptionPane.showMessageDialog(this, "Mở giao diện quản lý điểm (chưa triển khai)");
     }
 
-    private void openEvaluationManagement() {
-        JOptionPane.showMessageDialog(this, "Mở giao diện đánh giá (chưa triển khai)");
+    private void openEvaluationManagement() throws SQLException {
+        new DanhGiaGUI().setVisible(true);
+        dispose();
     }
 
     private void openRewardManagement() {

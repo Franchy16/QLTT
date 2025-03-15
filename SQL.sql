@@ -54,7 +54,7 @@ create table DanhGia(
 	kihoc int,
 	namhoc int,
 	thaidohoctap nvarchar(10) check (thaidohoctap in (N'Tốt', N'Khá', N'Trung bình', N'Yếu')),
-	diemrenluyen nvarchar(10) check (diemrenluyen in (N'Tốt', N'Khá', N'Trung bình', N'Yếu')),
+	diemrenluyen nvarchar(10),
 	ketquadanhgia nvarchar(10) check (ketquadanhgia in (N'Tốt', N'Khá', N'Trung bình', N'Yếu')),
 );
 
