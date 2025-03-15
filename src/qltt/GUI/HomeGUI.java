@@ -29,7 +29,13 @@ public class HomeGUI extends JFrame {
         btnEvaluation = new JButton("Đánh Giá");
         btnReward = new JButton("Khen Thưởng");
         
-        btnStudent.addActionListener(e -> openStudentManagement());
+        btnStudent.addActionListener(e -> {
+            try {
+                openStudentManagement();
+            } catch (SQLException ex) {
+                Logger.getLogger(HomeGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
         btnScore.addActionListener(e -> openScoreManagement());
         btnEvaluation.addActionListener(e -> {
             try {
@@ -46,7 +52,7 @@ public class HomeGUI extends JFrame {
         add(btnReward);
     }
 
-    private void openStudentManagement() {
+    private void openStudentManagement() throws SQLException {
         new SinhVienGUI().setVisible(true);
         dispose();
     }
