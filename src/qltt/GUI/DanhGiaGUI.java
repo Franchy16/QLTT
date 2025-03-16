@@ -254,7 +254,7 @@ public class DanhGiaGUI extends JFrame {
     }
 
     private void XoaDanhGia(int id) throws SQLException {
-        if (dgSelectionId == -1) {
+        if (id == -1) {
             return;
         }
         try {
@@ -309,7 +309,7 @@ public class DanhGiaGUI extends JFrame {
         inputPanel.add(txtYear);
 
         inputPanel.add(new JLabel("Thái độ học tập:"));
-        String[] attitudes = {"Tốt", "Khá", "Trung bình", "Kém"};
+        String[] attitudes = {"Tốt", "Khá", "Trung bình", "Yếu"};
         cbAttitude = new JComboBox<>(attitudes);
         cbAttitude.addActionListener(e -> {
             calculateResult(txtPoint.getText(), cbAttitude.getSelectedItem().toString());
@@ -485,10 +485,6 @@ public class DanhGiaGUI extends JFrame {
         }
     }
 
-    private void addStudent() {
-        clearFields();
-    }
-
     private void goBack() {
         dispose();
         new HomeGUI().setVisible(true);
@@ -504,25 +500,7 @@ public class DanhGiaGUI extends JFrame {
             txtPoint.setText(model.getValueAt(selectedRow, 5).toString());
             txtResult.setText(model.getValueAt(selectedRow, 6).toString());
             dgSelectionId = Integer.parseInt(model.getValueAt(selectedRow, 0).toString());
-
         }
-    }
-
-    private void deleteStudent() {
-        int selectedRow = table.getSelectedRow();
-        if (selectedRow != -1) {
-            model.removeRow(selectedRow);
-        }
-    }
-
-    private void searchStudent() {
-//        String keyword = txtSearch.getText().toLowerCase();
-//        for (int i = 0; i < table.getRowCount(); i++) {
-//            if (table.getValueAt(i, 1).toString().toLowerCase().contains(keyword)) {
-//                table.setRowSelectionInterval(i, i);
-//                break;
-//            }
-//        }
     }
 
     private void clearFields() {

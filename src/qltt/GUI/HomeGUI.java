@@ -38,7 +38,13 @@ public class HomeGUI extends JFrame {
                 Logger.getLogger(HomeGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
-        btnReward.addActionListener(e -> openRewardManagement());
+        btnReward.addActionListener(e -> {
+            try {
+                openRewardManagement();
+            } catch (SQLException ex) {
+                Logger.getLogger(HomeGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
         
         add(btnStudent);
         add(btnScore);
@@ -60,8 +66,9 @@ public class HomeGUI extends JFrame {
         dispose();
     }
 
-    private void openRewardManagement() {
-        JOptionPane.showMessageDialog(this, "Mở giao diện khen thưởng (chưa triển khai)");
+    private void openRewardManagement() throws SQLException {
+        new KhenThuongGUI().setVisible(true);
+        dispose();
     }
 
     public static void main(String[] args) {

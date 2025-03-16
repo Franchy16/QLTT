@@ -7,6 +7,11 @@
             <file>file:/C:/Users/admin/Documents/NetBeansProjects/QLTT/src/qltt/GUI/SinhVienGUI.java</file>
             <file>file:/C:/Users/admin/Documents/NetBeansProjects/QLTT/src/qltt/GUI/HomeGUI.java</file>
             <file>file:/C:/Users/admin/Documents/NetBeansProjects/QLTT/src/qltt/Service/DBConnection.java</file>
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/QLTT/src/qltt/Entity/SinhVien.java</file>
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/QLTT/src/qltt/Entity/DanhGia.java</file>
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/QLTT/src/qltt/GUI/DanhGiaGUI.java</file>
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/QLTT/src/qltt/GUI/KhenThuongGUI.java</file>
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/QLTT/src/qltt/Entity/KhenThuong.java</file>
         </group>
     </open-files>
 </project-private>
