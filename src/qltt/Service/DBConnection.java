@@ -13,7 +13,7 @@ public class DBConnection {
         System.out.println("Creating SQL Server DataBase Connection");
         Connection connection = null; 
         try {
-            String Connectionurl="jdbc:sqlserver://localhost:1433;DatabaseName=QLTT;user=admin;password=123456;encrypt=true;trustServerCertificate=true";
+            String Connectionurl="jdbc:sqlserver://localhost:1433;DatabaseName=QLTT;user=sa;password=Hoang22aA@;encrypt=true;trustServerCertificate=true";
             connection = DriverManager.getConnection(Connectionurl);
         } catch (Exception e) {
             e.printStackTrace();
