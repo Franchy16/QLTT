@@ -29,8 +29,20 @@ public class HomeGUI extends JFrame {
         btnEvaluation = new JButton("Đánh Giá");
         btnReward = new JButton("Khen Thưởng");
         
-        btnStudent.addActionListener(e -> openStudentManagement());
-        btnScore.addActionListener(e -> openScoreManagement());
+        btnStudent.addActionListener(e -> {
+            try {
+                openStudentManagement();
+            } catch (SQLException ex) {
+                Logger.getLogger(HomeGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        btnScore.addActionListener(e -> {
+            try {
+                openScoreManagement();
+            } catch (SQLException ex) {
+                Logger.getLogger(HomeGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
         btnEvaluation.addActionListener(e -> {
             try {
                 openEvaluationManagement();
@@ -52,13 +64,14 @@ public class HomeGUI extends JFrame {
         add(btnReward);
     }
 
-    private void openStudentManagement() {
+    private void openStudentManagement() throws SQLException {
         new SinhVienGUI().setVisible(true);
         dispose();
     }
 
-    private void openScoreManagement() {
-        JOptionPane.showMessageDialog(this, "Mở giao diện quản lý điểm (chưa triển khai)");
+    private void openScoreManagement() throws SQLException {
+        new DiemGUI().setVisible(true);
+        dispose();
     }
 
     private void openEvaluationManagement() throws SQLException {
