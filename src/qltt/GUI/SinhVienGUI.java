@@ -95,6 +95,15 @@ public class SinhVienGUI extends JFrame {
         txtPhone = new JFormattedTextField(maskPhoneFormatter);
         txtPhone.setFocusLostBehavior(JFormattedTextField.PERSIST);
         txtPhone.setHorizontalAlignment(JTextField.CENTER);
+        txtPhone.addMouseListener(
+                new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        if(txtPhone.getText().trim().isEmpty())
+                            txtPhone.setCaretPosition(0);
+                    }
+                }
+        );
         inputPanel.add(txtPhone);
 
         inputPanel.add(new JLabel("Năm sinh:"));
@@ -111,6 +120,15 @@ public class SinhVienGUI extends JFrame {
         txtDate.setColumns(10);
         txtDate.setFocusLostBehavior(JFormattedTextField.PERSIST);
         txtDate.setHorizontalAlignment(JTextField.CENTER);
+        txtDate.addMouseListener(
+                new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        System.out.print(txtDate.getText().trim().length());
+                            txtDate.setCaretPosition(0);
+                    }
+                }
+        );
         inputPanel.add(txtDate);
         panel.add(inputPanel, BorderLayout.NORTH);
 
@@ -357,11 +375,16 @@ public class SinhVienGUI extends JFrame {
             gioitinh = 0;
             searchByGender = true;
         }
+        
+        System.out.println(txtAddress.getText());
         String diachi = txtAddress.getText();
-        String sdt = txtPhone.getText();
+        String sdt = txtPhone.getText().trim();
         String namSinh = txtDate.getText();
 
-        if (masv.isEmpty() && tensv.isEmpty() && lopsv.isEmpty() && searchByGender == false && diachi.isEmpty() && sdt.isEmpty() && namSinh.isEmpty()) {
+        System.out.println(diachi+"-"+ sdt + "-" + namSinh);
+        
+        if (masv.isEmpty()&& tensv.isEmpty()&& lopsv.isEmpty() && searchByGender == false && diachi.isEmpty()&&   sdt.isEmpty() && namSinh.trim().length() < 10 ){
+            System.out.println("Không filter gì");
             return;
         }
 
@@ -372,42 +395,64 @@ public class SinhVienGUI extends JFrame {
             boolean matchFound = false; // Reset matchFound cho mỗi sinh viên
 
             // Kiểm tra từng điều kiện tìm kiếm
-            if (!masv.isEmpty() && sv.getMasv().equals(masv)) {
-                matchFound = true;
-            } else {
-                matchFound = false;
+            if (!masv.isEmpty()) {
+                if (sv.getMasv().equals(masv)) {
+                    System.out.println("Tìm thấy mã sinh viên");
+                    matchFound = true;
+                } else {
+                    continue;
+                }
             }
-            if (!tensv.isEmpty() && sv.getTensv().contains(tensv)) {
-                matchFound = true;
-            } else {
-                matchFound = false;
-            }
-            if (!lopsv.isEmpty() && sv.getLop().equals(lopsv)) {
-                matchFound = true;
-            } else {
-                matchFound = false;
-            }
-            if (searchByGender && sv.getGioitinh() == gioitinh) {
-                matchFound = true;
-            } else {
-                matchFound = false;
-            }
-            if (!diachi.isEmpty() && sv.getDiachi().contains(diachi)) {
-                matchFound = true;
-            } else {
-                matchFound = false;
-            }
-            if (!sdt.isEmpty() && sv.getSdt().contains(sdt)) {
-                matchFound = true;
-            } else {
-                matchFound = false;
-            }
-            if (!namSinh.isEmpty() && sv.getNamsinh().contains(namSinh)) {
-                matchFound = true;
-            } else {
-                matchFound = false;
-            }
+            if (!tensv.isEmpty()) {
+                if (sv.getTensv().contains(tensv)) {
+                                        System.out.println("Tìm thấy tên sinh viên");
 
+                    matchFound = true;
+                } else {
+                    continue;
+                }
+            }
+            if (!lopsv.isEmpty()) {
+                if (sv.getLop().equals(lopsv)) {
+                                        System.out.println("Tìm thấy lớp sinh viên");
+
+                    matchFound = true;
+                } else {
+                    continue;
+                }
+            }
+            if (searchByGender) {
+                if (sv.getGioitinh() == gioitinh) {
+                                        System.out.println("Tìm thấy giới tính sinh viên");
+
+                    matchFound = true;
+                } else {
+                    continue;
+                }
+            }
+            if (!diachi.isEmpty()) {
+                if (sv.getDiachi().contains(diachi)) {
+                                        System.out.println("Tìm thấy địa chỉ sinh viên");
+
+                    matchFound = true;
+                } else {
+                    continue;
+                }
+            }
+            if (!sdt.isEmpty()) {
+                if (sv.getSdt().contains(sdt)) {
+                                        System.out.println("Tìm thấy sdt sinh viên");
+
+                    matchFound = true;
+                } else continue;
+            }
+            if (namSinh.length() < 10) {
+                if (sv.getNamsinh().contains(namSinh)) {
+                                        System.out.println("Tìm thấy năm sinh sinh viên");
+
+                    matchFound = true;
+                } else continue;
+            }
             // Nếu tìm thấy khớp, thêm sinh viên vào bảng
             if (matchFound) {
                 model.addRow(new Object[]{
