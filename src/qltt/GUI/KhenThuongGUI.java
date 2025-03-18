@@ -9,6 +9,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
@@ -33,6 +35,8 @@ import qltt.Service.DBConnection;
 import java.sql.*;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  *
@@ -42,12 +46,11 @@ public class KhenThuongGUI extends JFrame {
 
     private DefaultTableModel model;
     private JTable table;
-    private JTextField txtMaSV, txtTenSV, txtLop;
+    private JTextField txtTenSV, txtLop, txtMaKT, txtKetquadanhgia;
     private JTextField txtDiemtb, txtNamhoc;
-    private JTextField txtKetquadanhgia, txtDGNamhoc;
     private JComboBox<String> cbMaSV, cbKetquadanhgia;
     private Connection con;
-    private JButton addBtn, editBtn, deleteBtn;
+    private JButton addBtn, editBtn, deleteBtn, clearBtn;
     private int selectedID;
 
     private ArrayList<SinhVien> loadListSinhVien() throws SQLException {
@@ -115,35 +118,76 @@ public class KhenThuongGUI extends JFrame {
             if (placeHolder.equals(cbMaSV.getSelectedItem().toString())) {
                 txtTenSV.setText(StringUtils.EMPTY);
                 txtLop.setText(StringUtils.EMPTY);
+                txtNamhoc.setEditable(false);
+                txtNamhoc.setFocusable(false);
                 return;
             }
             try {
                 SinhVien sv = loadSinhVienByMaSV(cbMaSV.getSelectedItem().toString());
                 txtTenSV.setText(sv.getTensv());
                 txtLop.setText(sv.getLop());
+                txtNamhoc.setEditable(true);
+                txtNamhoc.setFocusable(true);
             } catch (SQLException ex) {
                 Logger.getLogger(KhenThuongGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
 
-        infoDiemPanel.setBorder(BorderFactory.createTitledBorder("Thông tin điểm và danh hiệu"));
+        infoDiemPanel.setBorder(BorderFactory.createTitledBorder("Thông tin khen thưởng"));
+
+        infoDiemPanel.add(new JLabel("Mã khen thưởng"));
+        txtMaKT = new JTextField();
+        infoDiemPanel.add(txtMaKT);
 
         infoDiemPanel.add(new JLabel("Năm học:"));
         txtNamhoc = new JTextField();
+        txtNamhoc.setEditable(false);
+        txtNamhoc.setFocusable(false);
         infoDiemPanel.add(txtNamhoc);
+
+        txtNamhoc.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                txtKetquadanhgia.setText(getAvgRankByYear(Integer.parseInt(txtNamhoc.getText()), cbMaSV.getSelectedItem().toString()));
+                txtDiemtb.setText(getAvgPointByYear(Integer.parseInt(txtNamhoc.getText()), cbMaSV.getSelectedItem().toString()));
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                txtKetquadanhgia.setText(getAvgRankByYear(Integer.parseInt(txtNamhoc.getText()), cbMaSV.getSelectedItem().toString()));
+                txtDiemtb.setText(getAvgPointByYear(Integer.parseInt(txtNamhoc.getText()), cbMaSV.getSelectedItem().toString()));
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                txtKetquadanhgia.setText(getAvgRankByYear(Integer.parseInt(txtNamhoc.getText()), cbMaSV.getSelectedItem().toString()));
+                txtDiemtb.setText(getAvgPointByYear(Integer.parseInt(txtNamhoc.getText()), cbMaSV.getSelectedItem().toString()));
+            }
+        });
 
         infoDiemPanel.add(new JLabel("Điểm (GPA):"));
         txtDiemtb = new JTextField();
+        txtDiemtb.setFocusable(false);
+        txtDiemtb.setEditable(false);
         infoDiemPanel.add(txtDiemtb);
 
+        infoDiemPanel.add(new JLabel("Đánh giá:"));
+        txtKetquadanhgia = new JTextField();
+        txtKetquadanhgia.setFocusable(false);
+        txtKetquadanhgia.setEditable(false);
+        infoDiemPanel.add(txtKetquadanhgia);
+
         infoDiemPanel.add(new JLabel("Danh hiệu:"));
-        String[] attitudes = {"Giỏi", "Xuất sắc"};
+        String[] attitudes = {"Không có danh hiệu", "Giỏi", "Xuất sắc"};
         cbKetquadanhgia = new JComboBox<>(attitudes);
+        cbKetquadanhgia.setEnabled(false);
+        cbKetquadanhgia.setFocusable(false);
         infoDiemPanel.add(cbKetquadanhgia);
 
         addBtn = new JButton("Thêm");
         editBtn = new JButton("Sửa");
         deleteBtn = new JButton("Xóa");
+        clearBtn = new JButton("Clear");
 
         addBtn.setBackground(Color.GREEN);
         editBtn.setBackground(Color.YELLOW);
@@ -156,12 +200,15 @@ public class KhenThuongGUI extends JFrame {
         btnPanel.add(addBtn);
         btnPanel.add(editBtn);
         btnPanel.add(deleteBtn);
+        btnPanel.add(clearBtn);
 
         addBtn.addActionListener(e -> {
             try {
                 Add();
             } catch (SQLException ex) {
                 Logger.getLogger(DanhGiaGUI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(KhenThuongGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
 
@@ -181,7 +228,9 @@ public class KhenThuongGUI extends JFrame {
             }
         });
 
-        model = new DefaultTableModel(new String[]{"ID", "Mã SV", "Tên SV", "Lớp", "Điểm", "Danh hiệu", "Năm học"}, 0);
+        clearBtn.addActionListener(e -> clearFields());
+
+        model = new DefaultTableModel(new String[]{"ID", "Mã KT", "Mã SV", "Tên SV", "Lớp", "Điểm", "Danh hiệu", "Năm học"}, 0);
         table = new JTable(model);
         table.getSelectionModel().addListSelectionListener(e -> getSelectedRowData());
         table.setFillsViewportHeight(true);
@@ -209,6 +258,138 @@ public class KhenThuongGUI extends JFrame {
                 goBack();
             }
         });
+    }
+
+    private float FormatDiem(String dg) {
+        if (dg == null || "".equals(dg)) {
+            return 0;
+        }
+        switch (dg) {
+            case "A" -> {
+                return 4.0f;
+            }
+            case "B" -> {
+                return 3.0f;
+            }
+            case "C" -> {
+                return 2.0f;
+            }
+            case "D" -> {
+                return 1.0f;
+            }
+            default -> {
+                return 0;
+            }
+        }
+    }
+
+    private int FormatDanhGia(String dg) {
+        if (dg == null || "".equals(dg)) {
+            return 0;
+        }
+        switch (dg) {
+            case "Tốt" -> {
+                return 4;
+            }
+            case "Khá" -> {
+                return 3;
+            }
+            case "Trung bình" -> {
+                return 2;
+            }
+            case "Yếu" -> {
+                return 1;
+            }
+            default -> {
+                return 0;
+            }
+        }
+    }
+
+    private String FormatDiemSo(int diem) {
+        switch (diem) {
+            case 4 -> {
+                return "Tốt";
+            }
+            case 3 -> {
+                return "Khá";
+            }
+            case 2 -> {
+                return "Trung bình";
+            }
+            case 1 -> {
+                return "Yếu";
+            }
+            default -> {
+                return "";
+            }
+        }
+    }
+
+    private String getAvgPointByYear(int year, String masv) {
+        ArrayList<String> listPoints = new ArrayList<>();
+        float avg = 0.0f;
+        try {
+            con = DBConnection.createConnection();
+            PreparedStatement ps = con.prepareStatement("select diemtb from Diem where namhoc = ? and masv = ?");
+            ps.setInt(1, year);
+            ps.setString(2, masv);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                listPoints.add(rs.getString("diemtb"));
+            }
+
+            if (!listPoints.isEmpty()) {
+                for (String point : listPoints) {
+                    avg += FormatDiem(point);
+                }
+            }
+
+            cbKetquadanhgia.setSelectedIndex(calculateDanhHieu(avg, txtKetquadanhgia.getText()));
+
+            return String.valueOf(avg / listPoints.size() * 10 / 4);
+        } catch (SQLException e) {
+            System.err.print(e);
+            return "0";
+        }
+    }
+
+    private String getAvgRankByYear(int year, String masv) {
+        ArrayList<String> listPoints = new ArrayList<>();
+        float avg = 0.0f;
+        try {
+            con = DBConnection.createConnection();
+            PreparedStatement ps = con.prepareStatement("select ketquadanhgia from DanhGia where namhoc = ? and masv = ?");
+            ps.setInt(1, year);
+            ps.setString(2, masv);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                listPoints.add(rs.getString("ketquadanhgia"));
+            }
+
+            if (!listPoints.isEmpty()) {
+                for (String point : listPoints) {
+                    avg += FormatDanhGia(point);
+                }
+            }
+            return FormatDiemSo(Math.round(avg / listPoints.size()));
+        } catch (SQLException e) {
+            System.err.print(e);
+            return "0";
+        }
+    }
+
+    private int calculateDanhHieu(float diem, String danhgia) {
+        if (danhgia.equals("Tốt")) {
+            if (diem >= 8.5f) {
+                return 2;
+            } else if (diem >= 7.0f) {
+                return 1;
+            }
+            return 0;
+        } else {
+            return 0;
+        }
     }
 
     private void goBack() {
@@ -244,10 +425,11 @@ public class KhenThuongGUI extends JFrame {
         try {
             con = DBConnection.createConnection();
             Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery("select id, masv, diem, danhhieu, namhoc from KhenThuong");
+            ResultSet rs = st.executeQuery("select id, makt, masv, diem, danhhieu, namhoc from KhenThuong");
             while (rs.next()) {
                 KhenThuong dg = new KhenThuong();
                 dg.setId(rs.getInt("id"));
+                dg.setMakt(rs.getString("makt"));
                 dg.setMasv(rs.getString("masv"));
                 dg.setDiem(rs.getFloat("diem"));
                 dg.setNamhoc(rs.getInt("namhoc"));
@@ -257,6 +439,7 @@ public class KhenThuongGUI extends JFrame {
 
                 model.addRow(new Object[]{
                     dg.getId(),
+                    dg.getMakt(),
                     dg.getMasv(),
                     sv.getTensv(),
                     sv.getLop(),
@@ -274,7 +457,12 @@ public class KhenThuongGUI extends JFrame {
         }
     }
 
-    private void Add() throws SQLException {
+    private void Add() throws SQLException, Exception {
+        if (cbKetquadanhgia.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(this, "Danh hiệu không đạt điều kiện!");
+            return;
+        }
+        validateMaKT(txtMaKT.getText());
         try {
             con = DBConnection.createConnection();
             Statement st = con.createStatement();
@@ -288,12 +476,13 @@ public class KhenThuongGUI extends JFrame {
                     ps.close();
                 }
 
-                ps = con.prepareStatement("insert into KhenThuong values (?, ?, ?, ?, ?, null,null)");
+                ps = con.prepareStatement("insert into KhenThuong values (?, ?, ?, ?, ?, ?, null,null)");
                 ps.setInt(1, nextId);
-                ps.setString(2, cbMaSV.getSelectedItem().toString());
-                ps.setFloat(3, Float.parseFloat(txtDiemtb.getText()));
-                ps.setString(4, cbKetquadanhgia.getSelectedItem().toString());
-                ps.setInt(5, Integer.parseInt(txtNamhoc.getText()));
+                ps.setString(2, txtMaKT.getText());
+                ps.setString(3, cbMaSV.getSelectedItem().toString());
+                ps.setFloat(4, Float.parseFloat(txtDiemtb.getText()));
+                ps.setString(5, cbKetquadanhgia.getSelectedItem().toString());
+                ps.setInt(6, Integer.parseInt(txtNamhoc.getText()));
 
                 int row = ps.executeUpdate();
 
@@ -322,8 +511,33 @@ public class KhenThuongGUI extends JFrame {
         }
     }
 
+    private void validateMaKT(String makt) throws SQLException, Exception {
+        try {
+            con = DBConnection.createConnection();
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery("select id, makt, masv, diem, danhhieu, namhoc from KhenThuong");
+            while (rs.next()) {
+                if (makt.equals(rs.getString("makt"))) {
+                    JOptionPane.showMessageDialog(this, "Mã khen thưởng đã tồn tại!");
+                    throw new Exception("Mã khen thưởng đã tồn tại!");
+                }
+
+            }
+        } catch (SQLException e) {
+            System.err.print(e);
+        } finally {
+            if (con != null) {
+                con.close();
+            }
+        }
+    }
+
     private void Update(int id) throws SQLException {
         if (id == -1) {
+            return;
+        }
+        if (cbKetquadanhgia.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(this, "Danh hiệu không đạt điều kiện!");
             return;
         }
         try {
@@ -355,6 +569,7 @@ public class KhenThuongGUI extends JFrame {
         if (id == -1) {
             return;
         }
+
         try {
             con = DBConnection.createConnection();
             PreparedStatement ps = con.prepareStatement("delete from KhenThuong where id = ?");
@@ -376,21 +591,28 @@ public class KhenThuongGUI extends JFrame {
     }
 
     private void clearFields() {
+        txtMaKT.setText(StringUtils.EMPTY);
         txtDiemtb.setText(StringUtils.EMPTY);
+        txtKetquadanhgia.setText(StringUtils.EMPTY);
         txtNamhoc.setText(StringUtils.EMPTY);
         cbKetquadanhgia.setSelectedIndex(0);
         cbMaSV.setSelectedIndex(0);
         selectedID = -1;
+        txtMaKT.setEditable(true);
+        txtMaKT.setFocusable(true);
     }
 
     private void getSelectedRowData() {
         int selectedRow = table.getSelectedRow();
         if (selectedRow != -1) {
-            cbMaSV.setSelectedItem(model.getValueAt(selectedRow, 1).toString());
-            txtNamhoc.setText(model.getValueAt(selectedRow, 6).toString());
-            txtDiemtb.setText(model.getValueAt(selectedRow, 4).toString());
-            cbKetquadanhgia.setSelectedItem(model.getValueAt(selectedRow, 5).toString());
+            txtMaKT.setText(model.getValueAt(selectedRow, 1).toString());
+            cbMaSV.setSelectedItem(model.getValueAt(selectedRow, 2).toString());
+            txtNamhoc.setText(model.getValueAt(selectedRow, 7).toString());
+            txtDiemtb.setText(model.getValueAt(selectedRow, 5).toString());
+            cbKetquadanhgia.setSelectedItem(model.getValueAt(selectedRow, 6).toString());
             selectedID = Integer.parseInt(model.getValueAt(selectedRow, 0).toString());
+            txtMaKT.setEditable(false);
+            txtMaKT.setFocusable(false);
         }
     }
 

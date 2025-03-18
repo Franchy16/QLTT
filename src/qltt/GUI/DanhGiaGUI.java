@@ -4,6 +4,7 @@
  */
 package qltt.GUI;
 
+import com.microsoft.sqlserver.jdbc.StringUtils;
 import javax.swing.JFrame;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -27,8 +28,8 @@ public class DanhGiaGUI extends JFrame {
 
     private DefaultTableModel model;
     private JTable table;
-    private JTextField txtPeriod, txtYear, txtSearch, txtPoint, txtResult;
-    private JButton btnAdd, btnEdit, btnDelete, btnSearch;
+    private JTextField txtPeriod, txtYear, txtSearch, txtPoint, txtResult, txtTenSV, txtLop;
+    private JButton btnAdd, btnEdit, btnDelete, btnSearch, btnClear;
     private JComboBox<String> cbMaSv, cbAttitude;
     private Connection con = null;
     private ArrayList<SinhVien> listSV;
@@ -285,20 +286,50 @@ public class DanhGiaGUI extends JFrame {
         setLayout(new BorderLayout(10, 10));
 
         JPanel panel = new JPanel(new BorderLayout(10, 10));
-        JPanel inputPanel = new JPanel(new GridLayout(7, 2, 5, 5));
+        JPanel mainPanel = new JPanel(new GridLayout(1, 2, 5, 5));
+        JPanel inputPanel1 = new JPanel(new GridLayout(6, 2, 5, 5));
+        JPanel inputPanel = new JPanel(new GridLayout(6, 2, 5, 5));
         JPanel buttonPanel = new JPanel(new FlowLayout());
 
         inputPanel.setBorder(BorderFactory.createTitledBorder("Thông tin đánh giá"));
+        inputPanel1.setBorder(BorderFactory.createTitledBorder("Thông tin sinh viên"));
 
-        inputPanel.add(new JLabel("Mã SV:"));
+        inputPanel1.add(new JLabel("Mã SV:"));
 
         listSV = loadListSinhVien();
         cbMaSv = new JComboBox<>();
+        String placeholderMaSV = "---Chọn mã sinh viên---";
+        cbMaSv.addItem(placeholderMaSV);
         for (SinhVien sinhVien : listSV) {
             cbMaSv.addItem(sinhVien.getMasv());
         }
 
-        inputPanel.add(cbMaSv);
+        cbMaSv.addActionListener(e -> {
+            if (placeholderMaSV.equals(cbMaSv.getSelectedItem().toString())) {
+                txtTenSV.setText(StringUtils.EMPTY);
+                txtLop.setText(StringUtils.EMPTY);
+                return;
+            }
+            try {
+                SinhVien sv = loadSinhVienByMaSV(cbMaSv.getSelectedItem().toString());
+                txtTenSV.setText(sv.getTensv());
+                txtLop.setText(sv.getLop());
+            } catch (SQLException ex) {
+                Logger.getLogger(KhenThuongGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+
+        inputPanel1.add(cbMaSv);
+
+        inputPanel1.add(new JLabel("Tên sinh viên"));
+        txtTenSV = new JTextField();
+        inputPanel1.add(txtTenSV);
+
+        inputPanel1.add(new JLabel("Lớp"));
+        txtLop = new JTextField();
+        inputPanel1.add(txtLop);
+
+        mainPanel.add(inputPanel1);
 
         inputPanel.add(new JLabel("Kì học:"));
         txtPeriod = new JTextField();
@@ -347,12 +378,15 @@ public class DanhGiaGUI extends JFrame {
         txtSearch = new JTextField();
         inputPanel.add(txtSearch);
 
-        panel.add(inputPanel, BorderLayout.NORTH);
+        mainPanel.add(inputPanel);
+
+        panel.add(mainPanel, BorderLayout.NORTH);
 
         btnAdd = new JButton("Thêm");
         btnEdit = new JButton("Sửa");
         btnDelete = new JButton("Xóa");
         btnSearch = new JButton("Tìm kiếm");
+        btnClear = new JButton("Clear");
 
         btnAdd.setBackground(Color.GREEN);
         btnEdit.setBackground(Color.YELLOW);
@@ -368,6 +402,7 @@ public class DanhGiaGUI extends JFrame {
         buttonPanel.add(btnEdit);
         buttonPanel.add(btnDelete);
         buttonPanel.add(btnSearch);
+        buttonPanel.add(btnClear);
         panel.add(buttonPanel, BorderLayout.CENTER);
 
         model = new DefaultTableModel(new String[]{"ID", "Mã SV", "Tên SV", "Lớp", "Thái độ học tập", "Điểm rèn luyện", "Kết quả đánh giá", "Kì học", "Năm học"}, 0);
@@ -412,6 +447,8 @@ public class DanhGiaGUI extends JFrame {
                 Logger.getLogger(DanhGiaGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
+        
+        btnClear.addActionListener(e -> clearFields());
 
         this.addWindowListener(new WindowAdapter() {
             @Override
@@ -509,7 +546,7 @@ public class DanhGiaGUI extends JFrame {
         txtResult.setText("");
         txtYear.setText("");
         cbAttitude.setSelectedIndex(0);
-        cbMaSv.setSelectedItem(0);
+        cbMaSv.setSelectedIndex(0);
         dgSelectionId = -1;
     }
 

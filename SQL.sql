@@ -34,7 +34,7 @@ create table Diem(
 	dieml3 float,
 	dieml4 float,
 	diemck float,
-	diemtb char(1) check (diemtb in ('A', 'B', 'C', 'D')),
+	diemtb char(1) check (diemtb in ('A', 'B', 'C', 'D', 'F')),
 	kihoc int,
 	namhoc int,
 	foreign key (masv) references SinhVien(masv),
@@ -67,6 +67,7 @@ create table DanhGia_SEQ(
 
 create table KhenThuong(
 	id bigint primary key not null,
+	makt varchar(10) unique not null,
 	masv varchar(10) not null,
 	foreign key (masv) references SinhVien(masv),
 	diem float,

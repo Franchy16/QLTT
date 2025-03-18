@@ -11,6 +11,20 @@ package qltt.Entity;
 public class KhenThuong {
 
     /**
+     * @return the makt
+     */
+    public String getMakt() {
+        return makt;
+    }
+
+    /**
+     * @param makt the makt to set
+     */
+    public void setMakt(String makt) {
+        this.makt = makt;
+    }
+
+    /**
      * @return the id
      */
     public int getId() {
@@ -80,6 +94,7 @@ public class KhenThuong {
         this.namhoc = namhoc;
     }
     private int id;
+    private String makt;
     private String masv;
     private float diem;
     private String danhhieu;
