@@ -3,7 +3,6 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-<<<<<<< HEAD
             <file>file:/C:/Users/admin/Documents/NetBeansProjects/QLTT/src/qltt/QLTT.java</file>
             <file>file:/C:/Users/admin/Documents/NetBeansProjects/QLTT/src/qltt/GUI/SinhVienGUI.java</file>
             <file>file:/C:/Users/admin/Documents/NetBeansProjects/QLTT/src/qltt/GUI/HomeGUI.java</file>
@@ -13,9 +12,7 @@
             <file>file:/C:/Users/admin/Documents/NetBeansProjects/QLTT/src/qltt/GUI/DanhGiaGUI.java</file>
             <file>file:/C:/Users/admin/Documents/NetBeansProjects/QLTT/src/qltt/GUI/KhenThuongGUI.java</file>
             <file>file:/C:/Users/admin/Documents/NetBeansProjects/QLTT/src/qltt/Entity/KhenThuong.java</file>
-=======
-            <file>file:/C:/Users/nxh22/OneDrive/Desktop/Project/outsource/QLTT/src/qltt/QLTT.java</file>
->>>>>>> b23d07559dc85c35b70801811fb051aab2ab09f4
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/QLTT/src/qltt/GUI/DiemGUI.java</file>
         </group>
     </open-files>
 </project-private>
